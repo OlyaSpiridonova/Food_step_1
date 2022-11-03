@@ -4,6 +4,7 @@ window.addEventListener('DOMContentLoaded', () => {
         tabsContent = document.querySelectorAll('.tabcontent'),
         tabsParent = document.querySelector('.tabheader__items');
 
+    // Функция, отвечающая за отключение класса активности (display: none)
     function hideTabContent() {
         tabsContent.forEach(function (item) {
             item.classList.add('hide');
@@ -15,6 +16,7 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // функция, отвечающая за подлючение классла активности (display: block)
     function showTabContent(i = 0) {
         tabsContent[i].classList.add('show', 'fade');
         tabsContent[i].classList.remove('hide');
@@ -24,6 +26,7 @@ window.addEventListener('DOMContentLoaded', () => {
     hideTabContent();
     showTabContent();
 
+    // Подключения обработчика событий, отвечающего за то, что при клике происходит скрытие одного контента и появляется необходимый
     tabsParent.addEventListener('click', function (event) {
         const target = event.target;
 
@@ -97,18 +100,22 @@ window.addEventListener('DOMContentLoaded', () => {
         modal = document.querySelector('.modal'),
         modalCloseBtn = document.querySelector('[data-close]');
 
-    /* Так как используется querySelectorAll нельзя просто так обращаться к переменной, необходимо перебрать через forEach */
+    //Так как используется querySelectorAll нельзя просто так обращаться к переменной, необходимо перебрать через forEach
 
+    // функция, отвечающая за открытие модального окна
+    function openModal() {
+        modal.classList.add('show');
+        modal.classList.remove('hide');
+        /* modal.classList.toggle('show'); */
+        document.body.style.overflow = 'hidden';
+        clearInterval(modalTimerId);
+    }
     modalTrigger.forEach(btn => {
-        btn.addEventListener('click', () => {
-            modal.classList.add('show');
-            modal.classList.remove('hide');
-            /* modal.classList.toggle('show'); */
-            document.body.style.overflow = 'hidden';
-        });
+        btn.addEventListener('click', openModal);
     });
-
-    function closeModal () {
+    
+    // функция, отвечающая за закрытие модального окна
+    function closeModal() {
         modal.classList.add('hide');
         modal.classList.remove('show');
         /*modal.classList.toggle('show'); */
@@ -117,18 +124,30 @@ window.addEventListener('DOMContentLoaded', () => {
 
     modalCloseBtn.addEventListener('click', closeModal);
 
+    // Создания обработчика событий, что при клике вне зоны модального окна, будет оно закрываться
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
-            closeModal ();
+            closeModal();
         }
     });
 
+    // выход из модального окна клавишей esc
     document.addEventListener('keydown', (e) => {
         if (e.code === "Escape" && modal.classList.contains('show')) {
-            closeModal ();
+            closeModal();
         }
     });
 
+    const modalTimerId = setTimeout(openModal, 5000); //Переменная, для появления модального окна через 5 сек 
 
+    // функция, отвечающая за появление модально окна при прокрутке до конца
+    function showModalByScroll() {
+        if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+            openModal();
+            window.removeEventListener('scroll', showModalByScroll); //Отключение появления модального окна более одного раза при прокрутке до коца
+        }
+    }
+
+    window.addEventListener('scroll', showModalByScroll); //появление модального окна при прокрутке до конца
 });
 
