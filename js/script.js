@@ -254,10 +254,18 @@ window.addEventListener('DOMContentLoaded', () => {
             const request = new XMLHttpRequest(); //это встроенный в браузер объект, который даёт возможность делать HTTP-запросы к серверу без перезагрузки страницы.
             request.open('POST', 'server.php'); //собирает настройки, которые помогут в будущем сделать запрос
 
-/*             request.setRequestHeader('Content-type', 'multipart/form-data'); */
+            request.setRequestHeader('Content-type', 'application/json');
             const formData = new FormData(form);
 
-            request.send(formData);
+            // Для отправки форм в формете Json неоьходимо добавить
+            const object = {};
+            formData.forEach(function (value, key) {
+                object[key] = value;
+            });
+
+            const json = JSON.stringify(object);
+
+            request.send(json);
 
             request.addEventListener('load', () => {
                 if (request.status === 200) {
@@ -266,7 +274,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     form.reset(); // Очистка формы
                     setTimeout(() => {
                         statusMessege.remove();
-                    }, 2000); 
+                    }, 2000);
                 } else {
                     statusMessege.textContent = message.failure;
                 }
